@@ -7,3 +7,4 @@ lib.rs.h
 libsigner.a
 *.so
 CardanoSigner.py
+__pycache__/
