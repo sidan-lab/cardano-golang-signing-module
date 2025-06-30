@@ -1,2 +1,3 @@
-# cardano-capsule
-A collection of modules of Cardano functionality, wrapped into high level languages using SWIG.
+# cardano-golang-signing-module
+
+Signing module for Cardano transactions in Golang, ported from Rust
