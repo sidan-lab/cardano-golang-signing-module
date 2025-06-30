@@ -347,14 +347,6 @@ publicKey, err := signer.GetPublicKey()
 signer.Close() // Always call this!
 ```
 
-## 🔧 Build Optimization
-
-The build is optimized to:
-- ✅ **Remove debug symbols** - smaller binary size
-- ✅ **Strip toolchain paths** - no personal paths in binaries
-- ✅ **Link-time optimization** - better performance
-- ✅ **Dead code elimination** - only needed code included
-
 ## 🐛 Troubleshooting
 
 ### Step 1: Normal Import Issues
