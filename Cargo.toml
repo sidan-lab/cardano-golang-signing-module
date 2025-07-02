@@ -1,0 +1,24 @@
+[package]
+name = "signer-go"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "signer_go"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+whisky-wallet = "1.0.4"
+
+[profile.release]
+debug = false
+debuginfo = 0
+strip = "symbols"
+panic = "abort"
+lto = true
+codegen-units = 1
+rpath = false
+
+[[example]]
+name = "test_c_interface"
+path = "examples/test_c_interface.rs" 
