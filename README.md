@@ -7,9 +7,10 @@ A Go module for calling cryptocurrency transaction signing functions from a Rust
 ## 🚀 Quick Start
 
 ### Step 1: Try Normal Go Import (Recommended First)
+
 ```go
 // In your Go project
-import "github.com/sidan-lab/cardano-golang-signing-module"
+import signer "github.com/sidan-lab/cardano-golang-signing-module"
 
 // Try to use the library
 func main() {
@@ -29,12 +30,14 @@ go build  # or go run main.go
 If you get errors like "no prebuilt library for your architecture" or linking errors, follow these steps:
 
 #### 1. Clone the repository
+
 ```bash
 git clone https://github.com/sidan-lab/cardano-golang-signing-module.git
 cd cardano-golang-signing-module
 ```
 
 #### 2. Build the library manually
+
 ```bash
 ./build_manual.sh
 ```
@@ -49,6 +52,7 @@ go build
 ```
 
 ### For Publishing New Versions (Maintainers Only)
+
 ```bash
 ./build_prebuilt.sh
 ```
@@ -56,10 +60,12 @@ go build
 ## 📋 When Do You Need Manual Build?
 
 ### Normal Workflow
+
 1. **First try** importing the package normally (`go mod tidy`, `go build`)
 2. **If that fails** with architecture or linking errors → use manual build
 
 ### Manual Build Required When:
+
 - ❌ **No prebuilt library** for your architecture (ARM, exotic platforms, etc.)
 - ❌ **Linking errors** with prebuilt libraries
 - ❌ **CGO compilation issues** with distributed binaries
@@ -69,7 +75,9 @@ go build
 - ✅ **Security** - want to build from source yourself
 
 ### Prebuilt Build (For Maintainers Only)
+
 **Use `./build_prebuilt.sh` only when:**
+
 - 🔧 **Publishing new version** - creating libraries for distribution
 - 🔧 **Cross-platform builds** - building for all supported platforms
 - 🔧 **Release preparation** - updating prebuilt binaries for users
@@ -79,49 +87,55 @@ go build
 ### Prerequisites
 
 1. **Install Rust** (if not already installed):
+
    ```bash
    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
    source ~/.cargo/env
    ```
 
 2. **Install Go** (1.19+):
+
    ```bash
    # macOS
    brew install go
-   
+
    # Linux
    sudo apt install golang-go  # Ubuntu/Debian
    sudo yum install golang      # CentOS/RHEL
-   
+
    # Windows - download from https://golang.org/dl/
    ```
 
 3. **C Compiler**:
+
    ```bash
    # macOS - Xcode Command Line Tools
    xcode-select --install
-   
+
    # Linux
    sudo apt install build-essential  # Ubuntu/Debian
    sudo yum groupinstall "Development Tools"  # CentOS/RHEL
-   
+
    # Windows - Visual Studio Build Tools or MinGW
    ```
 
 ### Step-by-Step Manual Build
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd cardano-golang-signing-module
    ```
 
 2. **Run the complete manual build**:
+
    ```bash
    ./build_manual.sh
    ```
 
    This script will:
+
    - Switch to manual build configuration
    - Build Rust library from source
    - Build Go project
@@ -137,16 +151,19 @@ go build
 If you prefer to run steps manually:
 
 1. **Switch to manual build configuration**:
+
    ```bash
    ./switch_to_manual_build.sh
    ```
 
 2. **Build Rust library**:
+
    ```bash
    cargo build --release
    ```
 
 3. **Build Go project**:
+
    ```bash
    go build
    ```
@@ -161,14 +178,18 @@ If you prefer to run steps manually:
 ### Main Build Scripts
 
 #### `./build_manual.sh` (For Users)
+
 **Complete manual build pipeline**
-- ✅ Switches to manual build mode  
+
+- ✅ Switches to manual build mode
 - ✅ Builds Rust library from source (`cargo build --release`)
 - ✅ Builds Go project using your compiled library
 - ✅ Runs tests
 
 #### `./build_prebuilt.sh` (For Maintainers)
+
 **Multi-platform build for publishing**
+
 - 🔧 Switches to prebuilt library mode
 - 🔧 Builds Rust libraries for all platforms (via `build_rust.sh`)
 - 🔧 Updates prebuilt binaries in `prebuilt/` directory
@@ -178,22 +199,26 @@ If you prefer to run steps manually:
 ### Configuration Scripts
 
 #### `./switch_to_prebuilt.sh`
+
 - Switches `signer.go` to use platform-specific prebuilt libraries
 - Only changes configuration, doesn't build
 
 #### `./switch_to_manual_build.sh`
+
 - Switches `signer.go` to use unified manual build library
 - Only changes configuration, doesn't build
 
 #### `./build_rust.sh` (For Maintainers)
+
 - Builds Rust libraries for all supported platforms
-- Creates prebuilt binaries in `prebuilt/` directory  
+- Creates prebuilt binaries in `prebuilt/` directory
 - **Used internally by `build_prebuilt.sh`**
 - Only needed when publishing new versions
 
 ## 🔄 Typical User Workflows
 
 ### Scenario 1: Normal Usage (Works out of the box)
+
 ```bash
 # In your Go project
 go mod init myproject
@@ -206,6 +231,7 @@ go build  # Should work with prebuilt libraries
 ```
 
 ### Scenario 2: Prebuilt Libraries Don't Work
+
 ```bash
 # Step 1: Clone and build manually
 git clone https://github.com/sidan-lab/cardano-golang-signing-module.git
@@ -220,6 +246,7 @@ go build
 ```
 
 ### For Project Maintainers
+
 ```bash
 # When ready to publish new version
 ./build_prebuilt.sh    # Creates binaries for all platforms
@@ -232,24 +259,30 @@ git push origin main --tags
 ## 📂 Supported Platforms
 
 ### Prebuilt Libraries Available
+
 - **Linux**: `x86_64`, `aarch64` (ARM64)
-- **macOS**: `x86_64` (Intel), `aarch64` (Apple Silicon)  
+- **macOS**: `x86_64` (Intel), `aarch64` (Apple Silicon)
 - **Windows**: `x86_64`
 
 ### Library Formats
+
 - **Linux/macOS**: Static libraries (`.a`)
 - **Windows**: Dynamic libraries (`.dll`)
 
 ## 🛠️ Library Locations
 
 ### Prebuilt Mode
+
 Uses platform-specific libraries:
+
 - **Linux**: `prebuilt/linux_{amd64,arm64}/libsigner_go.a`
-- **macOS**: `prebuilt/darwin_{amd64,arm64}/libsigner_go.a`  
+- **macOS**: `prebuilt/darwin_{amd64,arm64}/libsigner_go.a`
 - **Windows**: `prebuilt/windows_amd64/signer_go.dll`
 
 ### Manual Mode
+
 Uses your compiled library:
+
 - **Unix (Linux/macOS)**: `target/release/libsigner_go.a`
 - **Windows**: `target/release/signer_go.dll` or `libsigner_go.a`
 
@@ -258,6 +291,7 @@ Uses your compiled library:
 ### Complete Example
 
 1. **Create a new Go project**:
+
 ```bash
 mkdir myproject
 cd myproject
@@ -265,67 +299,72 @@ go mod init myproject
 ```
 
 2. **Create main.go**:
+
 ```go
 package main
 
 import (
     "fmt"
     "log"
-    "github.com/sidan-lab/cardano-golang-signing-module"
+    signer "github.com/sidan-lab/cardano-golang-signing-module"
 )
 
 func main() {
     // Create signer from mnemonic phrase
     mnemonic := "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
     derivationPath := "m/44'/118'/0'/0/0"
-    
+
     signer, err := signer.NewMnemonicSigner(mnemonic, derivationPath)
     if err != nil {
         log.Fatalf("Failed to create signer: %v", err)
     }
     defer signer.Close() // Important to free resources!
-    
+
     // Get public key
     publicKey, err := signer.GetPublicKey()
     if err != nil {
         log.Fatalf("Failed to get public key: %v", err)
     }
-    
+
     fmt.Printf("Public Key: %s\n", publicKey)
-    
+
     // Sign transaction
     txHex := "your_transaction_hex_here"
     signature, err := signer.SignTransaction(txHex)
     if err != nil {
         log.Fatalf("Failed to sign transaction: %v", err)
     }
-    
+
     fmt.Printf("Signature: %s\n", signature)
 }
 ```
 
 3. **Try to build normally first**:
+
 ```bash
 go mod tidy
 go build
 ```
 
 4. **If that fails** → follow manual build instructions above
-```
+
+````
 
 ### Available Signer Types
 
 #### 1. Mnemonic Signer
 ```go
 signer, err := signer.NewMnemonicSigner(mnemonicPhrase, derivationPath)
-```
+````
 
 #### 2. Bech32 Signer
+
 ```go
 signer, err := signer.NewBech32Signer(rootPrivateKey, derivationPath)
 ```
 
 #### 3. CLI Signer
+
 ```go
 signer, err := signer.NewCLISigner(ed25519Key)
 ```
@@ -333,16 +372,19 @@ signer, err := signer.NewCLISigner(ed25519Key)
 ### Signer Methods
 
 #### Sign Transaction
+
 ```go
 signature, err := signer.SignTransaction(txHex)
 ```
 
 #### Get Public Key
+
 ```go
 publicKey, err := signer.GetPublicKey()
 ```
 
 #### Free Resources
+
 ```go
 signer.Close() // Always call this!
 ```
@@ -352,6 +394,7 @@ signer.Close() // Always call this!
 ### Step 1: Normal Import Issues
 
 #### "Package not found" or "Module not found"
+
 ```bash
 go mod tidy
 go clean -modcache
@@ -359,11 +402,13 @@ go mod download
 ```
 
 #### "CGO linking errors" or "Architecture not supported"
+
 Your platform may not have prebuilt libraries. **→ Go to Manual Build (Step 2)**
 
 ### Step 2: Manual Build Issues
 
 #### Prerequisites Missing
+
 ```bash
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -377,6 +422,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 #### Build Errors
+
 ```bash
 # Clean everything and rebuild
 go clean
@@ -385,7 +431,9 @@ cargo clean
 ```
 
 #### "Local module replace not working"
+
 Make sure the path is absolute:
+
 ```bash
 # Get absolute path
 pwd  # Note the full path
@@ -396,15 +444,19 @@ go mod tidy
 ```
 
 ### "cargo not found"
+
 Install Rust toolchain:
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 ### "go not found"
+
 Install Go from https://golang.org/dl/
 
 ### CGO Compilation Errors
+
 1. Make sure you have a C compiler installed
 2. Try clean rebuild:
    ```bash
@@ -413,6 +465,7 @@ Install Go from https://golang.org/dl/
    ```
 
 ### Linking Errors
+
 1. Check that the library was built successfully
 2. Try switching build modes:
    ```bash
@@ -422,6 +475,7 @@ Install Go from https://golang.org/dl/
    ```
 
 ### Runtime Errors
+
 - ❌ Check that `signer.Close()` wasn't called before use
 - ❌ Verify input data (mnemonic phrases, keys) is valid
 - ❌ Make sure error handling is proper
@@ -465,4 +519,4 @@ Install Go from https://golang.org/dl/
 
 ## 🤝 Contributing
 
-[Add contributing guidelines here] 
+[Add contributing guidelines here]
