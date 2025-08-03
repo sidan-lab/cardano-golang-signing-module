@@ -18,6 +18,8 @@ panic = "abort"
 lto = true
 codegen-units = 1
 rpath = false
+opt-level = "z"
+overflow-checks = false
 
 [[example]]
 name = "test_c_interface"

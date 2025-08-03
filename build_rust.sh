@@ -18,6 +18,13 @@ declare -A TARGETS=(
 export MACOSX_DEPLOYMENT_TARGET=15.0
 export CARGO_NET_GIT_FETCH_WITH_CLI=true     # faster CI clones
 
+# Control whether to copy dynamic libraries (.dll, .dylib, .so) and Windows import libraries (*.dll.a, *.dll.lib)
+# By default only static libraries (.a, .lib) are copied, excluding Windows import libraries
+COPY_DYNAMIC_LIBS="${COPY_DYNAMIC_LIBS:-false}"
+
+CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
+export RUSTFLAGS="--remap-path-prefix=$CARGO_HOME=/cargo --remap-path-prefix=$HOME=/home/user --remap-path-prefix=$ROOT=/build ${RUSTFLAGS:-}"
+
 for key in "${!TARGETS[@]}"; do
   triple="${TARGETS[$key]}"
   echo -e "\n=== Building $key  →  $triple ==="
@@ -33,18 +40,28 @@ for key in "${!TARGETS[@]}"; do
   dst="$OUT/$key"
   mkdir -p "$dst"
 
-  if [ "$triple" == "darwin_amd64" ] || [ "$triple" == "darwin_arm64" ]; then
-    install_name_tool -id @rpath/libsigner_go.dylib \
-    target/$triple/release/deps/libsigner_go.dylib
-  fi
-
-  # Copy all signer_go and libsigner_go files (.lib, .dll, .a)
+  # Copy all signer_go and libsigner_go files
   find "target/$triple/release/" -name "signer_go*" -o -name "libsigner_go*" | while read -r file; do
-    if [ -f "$file" ] && [[ "$file" =~ \.(lib|dll|a|dylib|so)$ ]]; then
-      cp "$file" "$dst/"
-      echo "  Copied: $(basename "$file")"
+    if [ -f "$file" ]; then
+      # Copy static libraries (but exclude Windows import libraries *.dll.a, *.dll.lib)
+      if [[ "$file" =~ \.(lib|a)$ ]] && [[ ! "$file" =~ \.dll\.(lib|a)$ ]]; then
+        cp "$file" "$dst/"
+        echo "  Copied: $(basename "$file")"
+      # Copy dynamic libraries and Windows import libraries only if enabled
+      elif [[ "$COPY_DYNAMIC_LIBS" == "true" ]] && [[ "$file" =~ \.(dll|dylib|so|dll\.a|dll\.lib)$ ]]; then
+        cp "$file" "$dst/"
+        echo "  Copied: $(basename "$file")"
+      fi
     fi
   done
+
+  # Fix install_name for macOS dylibs AFTER copying (only if dynamic libs are enabled)
+  if [[ "$COPY_DYNAMIC_LIBS" == "true" ]] && ([[ "$key" == "darwin_amd64" ]] || [[ "$key" == "darwin_arm64" ]]); then
+    if [ -f "$dst/libsigner_go.dylib" ]; then
+      install_name_tool -id @rpath/libsigner_go.dylib "$dst/libsigner_go.dylib"
+      echo "  Fixed install_name for $dst/libsigner_go.dylib"
+    fi
+  fi
 done
 
 echo -e "\n✅  All artifacts are in  $(realpath "$OUT")"
