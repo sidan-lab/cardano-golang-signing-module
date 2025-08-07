@@ -20,7 +20,7 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true     # faster CI clones
 
 # Control whether to copy dynamic libraries (.dll, .dylib, .so) and Windows import libraries (*.dll.a, *.dll.lib)
 # By default only static libraries (.a, .lib) are copied, excluding Windows import libraries
-COPY_DYNAMIC_LIBS="${COPY_DYNAMIC_LIBS:-false}"
+COPY_DYNAMIC_LIBS="${COPY_DYNAMIC_LIBS:-true}"
 
 CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
 export RUSTFLAGS="--remap-path-prefix=$CARGO_HOME=/cargo --remap-path-prefix=$HOME=/home/user --remap-path-prefix=$ROOT=/build ${RUSTFLAGS:-}"
