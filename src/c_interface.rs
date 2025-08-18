@@ -31,15 +31,17 @@ pub extern "C" fn signer_new_mnemonic(
         Err(_) => return std::ptr::null_mut(),
     };
 
-    let wallet = Wallet::new(WalletType::MnemonicWallet(MnemonicWallet {
+    let wallet = match Wallet::new(WalletType::MnemonicWallet(MnemonicWallet {
         mnemonic_phrase: mnemonic_str.to_string(),
         derivation_indices: DerivationIndices::from_str(derivation_str),
-    }));
+    })) {
+        Ok(w) => w,
+        Err(_) => return std::ptr::null_mut(),
+    };
 
-    match wallet.get_account() {
-        Ok(account) => Box::into_raw(Box::new(CSigner { account })),
-        Err(_) => std::ptr::null_mut(),
-    }
+    Box::into_raw(Box::new(CSigner {
+        account: wallet.account,
+    }))
 }
 
 /// Create a new signer from root private key (bech32)
@@ -63,15 +65,17 @@ pub extern "C" fn signer_new_bech32(
         Err(_) => return std::ptr::null_mut(),
     };
 
-    let wallet = Wallet::new(WalletType::RootKeyWallet(RootKeyWallet {
+    let wallet = match Wallet::new(WalletType::RootKeyWallet(RootKeyWallet {
         root_key: key_str.to_string(),
         derivation_indices: DerivationIndices::from_str(derivation_str),
-    }));
+    })) {
+        Ok(w) => w,
+        Err(_) => return std::ptr::null_mut(),
+    };
 
-    match wallet.get_account() {
-        Ok(account) => Box::into_raw(Box::new(CSigner { account })),
-        Err(_) => std::ptr::null_mut(),
-    }
+    Box::into_raw(Box::new(CSigner {
+        account: wallet.account,
+    }))
 }
 
 /// Create a new signer from ED25519 key (CLI style)
@@ -87,12 +91,14 @@ pub extern "C" fn signer_new_cli(ed25519_key: *const c_char) -> *mut CSigner {
         Err(_) => return std::ptr::null_mut(),
     };
 
-    let wallet = Wallet::new_cli(key_str);
+    let wallet = match Wallet::new_cli(key_str) {
+        Ok(w) => w,
+        Err(_) => return std::ptr::null_mut(),
+    };
 
-    match wallet.get_account() {
-        Ok(account) => Box::into_raw(Box::new(CSigner { account })),
-        Err(_) => std::ptr::null_mut(),
-    }
+    Box::into_raw(Box::new(CSigner {
+        account: wallet.account,
+    }))
 }
 
 /// Sign a transaction
@@ -158,4 +164,4 @@ pub extern "C" fn signer_free_string(s: *mut c_char) {
             let _ = CString::from_raw(s);
         }
     }
-} 
+}

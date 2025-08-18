@@ -4,7 +4,6 @@ package signer
 #cgo CFLAGS: -I${SRCDIR}/include
 #cgo LDFLAGS: -L${SRCDIR}/target/release -lsigner_go
 #cgo LDFLAGS: -L${SRCDIR}/target/release -lsigner_go
-#cgo LDFLAGS: -L${SRCDIR}/target/release -lsigner_go
 
 
 
